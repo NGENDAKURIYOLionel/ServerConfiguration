@@ -3,7 +3,7 @@ For further details : **[Email Me](mailto:ngendlio@gmail.com)**
 
 **Last update: Tue Jul 26 5:56 pm**
 
-### Keep the system Up-to-date
+### Keep the system up-to-date
 * Update the system
 ```python
 sudo apt-get update 
@@ -32,7 +32,8 @@ There you will find some folders.
 
 # Before compiling
 ## Avoid information disclosure
-To avoid information disclosure about the web server, we will to spoof **[Microsoft-IIS/8.5](http://www.iis.net/)**  as our web server.For that,edit the file **ngx_http_header_filter_module.c** in the **src/http/** folder:
+To avoid information disclosure about the web server, we will to spoof **[Microsoft-IIS/8.5](http://www.iis.net/)**  as our web server. 
+For that,edit the file **ngx_http_header_filter_module.c** in the **src/http/** folder:
 
 ```python
 vi +49 src/http/ngx_http_header_filter_module.c
@@ -170,7 +171,10 @@ http {
           
           # CIPHERS CHOSEN FOR FORWARD SECRECY AND COMPATIBILITY
           ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:ECDHE-RSA-AES128-GCM-SHA256:AES256+EECDH:DHE-RSA-AES128-GCM-SHA256:AES256+EDH:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA:ECDHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES256-GCM-SHA384:AES128-GCM-SHA256:AES256-SHA256:AES128-SHA256:AES256-SHA:AES128-SHA:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!RC4";
-        
+          
+          #PARANOID MODE 
+          #ssl_ciphers 'EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH';
+
           # ENABLE OCSP STAPLING 
           resolver 8.8.8.8;
           ssl_stapling on;
