@@ -104,7 +104,7 @@ The **/usr/local/nginx/conf/nginx.conf** configuration file must contain these s
 ```Nginx
 http {
         ##
-        # Basic Settings
+        # Security Settings
         # NEVER BROADCAST THE NGINX VERSION NUMBER IN ERROR PAGES AND SERVER HEADER
         server_tokens off;
         
