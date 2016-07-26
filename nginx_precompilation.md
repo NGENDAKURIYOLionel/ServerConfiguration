@@ -3,9 +3,7 @@ For further details : **[Email Me](mailto:ngendlio@gmail.com)**
 
 **Last update: Tue Jul 26 5:56 pm**
 
-We will compile the NGINX ourself.
-At the time of writing, the last version is : nginx-1.11.2.tar.gz
-### Keep the system up-to-date
+### Keep the system Up-to-date
 * Update the system
 ```python
 sudo apt-get update 
@@ -21,7 +19,9 @@ sudo apt-get upgrade nginx
 
 # Download the source tarball
 We will download the sources at the official website: http://nginx.org/download/
-then,
+We will be compiling the NGINX ourself.
+At the time of writing, the latest version is : nginx-1.11.2.tar.gz
+
 ```python
 cd /opt
 wget -c http://nginx.org/download/nginx-1.11.2.tar.gz
@@ -32,8 +32,7 @@ There you will find some folders.
 
 # Before compiling
 ## Avoid information disclosure
-To avoid information disclosure about the web server, we will to spoof Microsoft-IIS/8.5  as our web server,
-edit the file **ngx_http_header_filter_module.c** in the **src/http/** folder:
+To avoid information disclosure about the web server, we will to spoof **[Microsoft-IIS/8.5](http://www.iis.net/)**  as our web server.For that,edit the file **ngx_http_header_filter_module.c** in the **src/http/** folder:
 
 ```python
 vi +49 src/http/ngx_http_header_filter_module.c
