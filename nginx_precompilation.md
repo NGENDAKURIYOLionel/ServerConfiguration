@@ -1,4 +1,6 @@
-# ServerConfiguration NGINX
+# [ServerConfiguration NGINX](https://github.com/NGENDAKURIYOLionel/ServerConfiguration/blob/master/nginx_precompilation.md)
+For further details : **[Email Me](mailto:ngendlio@gmail.com)**
+
 **Last update: Tue Jul 26 5:56 pm**
 
 We will compile the NGINX ourself.
