@@ -19,7 +19,9 @@ sudo apt-get upgrade nginx
 
 # Download the source tarball
 We will download the sources at the official website: http://nginx.org/download/
+
 We will be compiling the NGINX ourself.
+
 At the time of writing, the latest version is : nginx-1.11.2.tar.gz
 
 ```python
