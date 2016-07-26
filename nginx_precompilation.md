@@ -33,6 +33,7 @@ There you will find some folders.
 # Before compiling
 ## Avoid information disclosure
 To avoid information disclosure about the web server, we will to spoof **[Microsoft-IIS/8.5](http://www.iis.net/)**  as our web server. 
+
 For that,edit the file **ngx_http_header_filter_module.c** in the **src/http/** folder:
 
 ```python
@@ -199,6 +200,8 @@ Then apply all the changes:
 ```python
 usr/local/nginx/sbin/nginx -s reload
 ```
+
+
 For further details : **[Email Me](mailto:ngendlio@gmail.com)**
 
 
