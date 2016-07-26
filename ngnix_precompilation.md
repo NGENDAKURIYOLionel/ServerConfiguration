@@ -1,6 +1,21 @@
 # ServerConfiguration NGINX
+**Last update: Tue Jul 26 5:56 pm**
+
 We will compile the NGINX ourself.
 At the time of writing, the last version is : nginx-1.11.2.tar.gz
+### Keep the system up-to-date
+* Update the system
+```python
+sudo apt-get update 
+```
+* Upgrade the system
+```python
+sudo apt-get dist-upgrade && sudo apt-get upgrade 
+```
+* Upgrade NGINX to the latest version
+```python
+sudo apt-get upgrade nginx
+```
 
 ## Download the source tarball at :http://nginx.org/download/
 ## Avoid information disclosure
@@ -8,15 +23,17 @@ To avoid information disclosure about the web server, we will to spoof Microsoft
 edit the file **ngx_http_header_filter_module.c** in the **src/http/** folder:
 
 ```python
-vi +48 src/http/ngx_http_header_filter_module.c
+vi +49 src/http/ngx_http_header_filter_module.c
 ```
-Now operate these changes: 
+Now operate these changes from this : 
 ```python
-~~static char ngx_http_server_string[] = "Server: nginx" CRLF;~~
+static char ngx_http_server_string[] = "Server: nginx" CRLF;
+static char ngx_http_server_full_string[] = "Server: " NGINX_VER CRLF;
+```
+to this: 
+```python
 static char ngx_http_server_string[] = "Server: Microsoft-IIS/8.5 " CRLF;
-~~static char ngx_http_server_full_string[] = "Server: " NGINX_VER CRLF;~~
 static char ngx_http_server_full_string[] = "Server: Microsoft-IIS/8.5 " NGINX_VER CRLF;
-
 ```
 
 ## Compile with this options to some modules that are will not be used
@@ -25,9 +42,9 @@ static char ngx_http_server_full_string[] = "Server: Microsoft-IIS/8.5 " NGINX_V
   make 
   make install
 ```
-Install PCRE in case of problem
+Install PCRE in case of it is not installed
 ```python
- install libpcre3 libpcre3-dev
+ apt-get install libpcre3 libpcre3-dev
 ```
 So this is the result:
 ```
@@ -54,7 +71,7 @@ Configuration summary
 ```python
  sudo /usr/local/nginx/sbin/nginx -Vt 
 ```
-You will get this result:
+You should get this result:
 ```
 nginx: the configuration file /usr/local/nginx/conf/nginx.conf syntax is ok
 nginx: configuration file /usr/local/nginx/conf/nginx.conf test is successful
@@ -62,7 +79,7 @@ nginx version: nginx/1.11.2
 built by gcc 4.8.4 (Ubuntu 4.8.4-2ubuntu1~14.04.3) 
 configure arguments: --without-http_autoindex_module --without-http_ssi_module
 ```
-## To start Nginx, use :
+## Start Nginx, use :
 ```python
 /usr/local/nginx/sbin/nginx
 ```
@@ -76,12 +93,16 @@ http {
         # Basic Settings
         # NEVER BROADCAST THE NGINX VERSION NUMBER IN ERROR PAGES AND SERVER HEADER
         server_tokens off;
+        
         # WE WILL NOT DISCLOSE INFORMATION THE REQUEST IS A UNAUTHORIZED 401 , FORBIDDEN 403 OR NOT FOUND 404 
         error_page 401 403 404 /404.html;
+        
         #WE DON'T WANT TO BE IFRAMED AND MITIGATE CLICKJACKING ATTACK
         add_header X-Frame-Options SAMEORIGIN;
+        
         #PROTECT SOME BROWSER FROM SNIFFING THE CONTENT TYPE
         add_header X-Content-Type-Options nosniff;
+        
         # MITIGATE XSS ATTACKS..
         add_header X-XSS-Protection "1; mode=block";
         
@@ -93,19 +114,47 @@ http {
           # OUR CERTS AND KEYS
           ssl_certificate /etc/nginx/ssl/star_ourwebsite_com.crt;
           ssl_certificate_key /etc/nginx/ssl/star_ourwebsite_com.key;
-        
+          
+          ## BLOCK SOME KNOWN USER AGENTS AND WEB SCRAWLERS
+          if ($http_user_agent ~* LWP::Simple|BBBike|wget|sqlmap|havij|nmap|nessus|absinthe|nikto|w3af|pangolin|bsqlbf|prog.customcrawler|mysqloit|netsparker ) {
+                 return 403;
+          }
+           
+         ## ONLY REQUESTS TO OUR HOST ARE ALLOWED 
+         if ($host !~ ^(ourwebsite.com|www.ourwebsite.com|machine1.ourwebsite.com|machine_etc.ourwebsite.com)$ ) {
+           return 444;
+         }
+         
+         ## ONLY ALLOW THESE REQUEST METHODS AND DENY OTHERS LIKE DELETE, SEARCH, ETC ##
+         if ($request_method !~ ^(GET|HEAD|POST)$ ) {
+             return 444;
+         }
+
           # ENABLE SESSION RESUMPTION TO IMPROVE HTTPS PERFORMANCE
           ssl_session_cache shared:SSL:10m;
           ssl_session_timeout 5m;
-          keepalive_timeout 70;
+          
+          # SOME LIMITATIONS AGAINST BUFFER OVERFLOW 
+          client_body_buffer_size  1K;
+          client_header_buffer_size 1k;
+          client_max_body_size 1k;
+          large_client_header_buffers 2 1k;
+          # TO INCREASE PERFORMANCE DECREASE TIMEOUT FOR SESSION
+          client_body_timeout   10;
+          client_header_timeout 10;
+          keepalive_timeout     5 5;
+          send_timeout          10;
+          
         
           # DIFFIE-HELLMAN PARAMETER FOR DHE CIPHERSUITES, RECOMMENDED 4096 BITS
           ssl_dhparam /etc/nginx/ssl/dhparam.pem;
         
           # ENABLES SERVER-SIDE PROTECTION FROM BEAST ATTACKS
           ssl_prefer_server_ciphers on;
+          
           # disable SSLv3(enabled by default since nginx 0.8.19) since it's less secure then TLS
           ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+          
           # CIPHERS CHOSEN FOR FORWARD SECRECY AND COMPATIBILITY
           ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:ECDHE-RSA-AES128-GCM-SHA256:AES256+EECDH:DHE-RSA-AES128-GCM-SHA256:AES256+EDH:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA:ECDHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES256-GCM-SHA384:AES128-GCM-SHA256:AES256-SHA256:AES128-SHA256:AES256-SHA:AES128-SHA:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!RC4";
         
@@ -126,22 +175,14 @@ http {
           server_name .ourwebsite.com;
           return 301 https://$host$request_uri;
         }
-
-
-
-
 ...
 ```
 
-Then usr/local/nginx/sbin/nginx -s reload
-# SSL configuration
-
-
+Then apply all the changes: 
 ```python
-
+usr/local/nginx/sbin/nginx -s reload
 ```
-
-
+For further details : **[Contact Lionel](mailto:ngendlio@gmail.com)**
 
 
 
