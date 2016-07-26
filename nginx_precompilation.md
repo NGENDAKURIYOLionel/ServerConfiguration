@@ -36,7 +36,7 @@ static char ngx_http_server_string[] = "Server: Microsoft-IIS/8.5 " CRLF;
 static char ngx_http_server_full_string[] = "Server: Microsoft-IIS/8.5 " NGINX_VER CRLF;
 ```
 
-## Compile with this options to some modules that are will not be used
+## Compile with these options to remove unecessary modules that we won t use
 ```python
  ./configure --without-http_autoindex_module --without-http_ssi_module
   make 
