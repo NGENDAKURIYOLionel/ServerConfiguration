@@ -17,7 +17,18 @@ sudo apt-get dist-upgrade && sudo apt-get upgrade
 sudo apt-get upgrade nginx
 ```
 
-## Download the source tarball at :http://nginx.org/download/
+# Download the source tarball
+We will download the sources at the official website: http://nginx.org/download/
+then,
+```python
+cd /opt
+wget -c http://nginx.org/download/nginx-1.11.2.tar.gz
+tar zxvf nginx-1.11.2.tar.gz
+cd nginx-1.11.2
+```
+There you will find some folders.
+
+# Before compiling
 ## Avoid information disclosure
 To avoid information disclosure about the web server, we will to spoof Microsoft-IIS/8.5  as our web server,
 edit the file **ngx_http_header_filter_module.c** in the **src/http/** folder:
@@ -79,6 +90,7 @@ nginx version: nginx/1.11.2
 built by gcc 4.8.4 (Ubuntu 4.8.4-2ubuntu1~14.04.3) 
 configure arguments: --without-http_autoindex_module --without-http_ssi_module
 ```
+#After compilation
 ## Start Nginx, use :
 ```python
 /usr/local/nginx/sbin/nginx
