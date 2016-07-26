@@ -120,15 +120,15 @@ http {
                  return 403;
           }
            
-         ## ONLY REQUESTS TO OUR HOST ARE ALLOWED 
-         if ($host !~ ^(ourwebsite.com|www.ourwebsite.com|machine1.ourwebsite.com|machine_etc.ourwebsite.com)$ ) {
-           return 444;
-         }
-         
-         ## ONLY ALLOW THESE REQUEST METHODS AND DENY OTHERS LIKE DELETE, SEARCH, ETC ##
-         if ($request_method !~ ^(GET|HEAD|POST)$ ) {
-             return 444;
-         }
+          ## ONLY REQUESTS TO OUR HOST ARE ALLOWED 
+          if ($host !~ ^(ourwebsite.com|www.ourwebsite.com|machine1.ourwebsite.com|machine_etc.ourwebsite.com)$ ) {
+            return 444;
+          }
+          
+          ## ONLY ALLOW THESE REQUEST METHODS AND DENY OTHERS LIKE DELETE, SEARCH, ETC ##
+          if ($request_method !~ ^(GET|HEAD|POST)$ ) {
+              return 444;
+          }
 
           # ENABLE SESSION RESUMPTION TO IMPROVE HTTPS PERFORMANCE
           ssl_session_cache shared:SSL:10m;
@@ -182,7 +182,7 @@ Then apply all the changes:
 ```python
 usr/local/nginx/sbin/nginx -s reload
 ```
-For further details : **[Contact Lionel](mailto:ngendlio@gmail.com)**
+For further details : **[Email Me](mailto:ngendlio@gmail.com)**
 
 
 
