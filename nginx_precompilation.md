@@ -87,7 +87,7 @@ configure arguments: --without-http_autoindex_module --without-http_ssi_module
 
 The **/usr/local/nginx/conf/nginx.conf** configuration file must contain these security options 
 
-```python
+```
 http {
         ##
         # Basic Settings
