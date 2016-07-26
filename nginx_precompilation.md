@@ -205,6 +205,7 @@ usr/local/nginx/sbin/nginx -s reload
 
 
 For further details : **[Email Me](mailto:ngendlio@gmail.com)**
+Source : **[My repository](https://github.com/NGENDAKURIYOLionel/ServerConfiguration/blob/master/nginx_precompilation.md)**
 
 
 
