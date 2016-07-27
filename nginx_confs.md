@@ -202,9 +202,17 @@ Then apply all the changes:
 ```python
 usr/local/nginx/sbin/nginx -s reload
 ```
+#### In case you want to uninstall properly
 
+Just do :
+```python
+sudo rm -f -R /usr/local/nginx && rm -f /usr/local/sbin/nginx
+```
+and also delete the downloaded folder from nginx website
+## Conclusion
 
 For further details : **[Email Me](mailto:ngendlio@gmail.com)**
+
 Source : **[My repository](https://github.com/NGENDAKURIYOLionel/ServerConfiguration/blob/master/nginx_precompilation.md)**
 
 
