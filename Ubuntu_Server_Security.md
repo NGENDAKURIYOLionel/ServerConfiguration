@@ -52,61 +52,30 @@ An HIDS must be installed so that we controll any modification of some specific 
 
 The HIDS must send us a **email notification** to our email address(that we will provide i.e innoveos_report) via ssmtp in case of a supervised folder or file is modified.
 
-We recommend the AIDE (Advanced intrusion detection system) tool. Because of its detailled reports.
-#### Installation AIDE
-To install do:
-```python
-apt-get install aide
-```
-Some important folders are:
-* /etc/aide/aide File containing some configuration variables
-* /etc/aide/aide.conf and /etc/aide/aide.conf.d/ – Default AIDE configuration files.
-* /var/lib/aide/aide.db – Default location for AIDE database.
-* /var/lib/aide/aide.db.new – Default location for newly-created AIDE database.
+We recommend the tripwire.
+####Installation tripwire
+During the installation you will be asked to give 2 passwords (keys). Don't forget them.
 
-Now ,update some some variables in the file ` /etc/default/aide` 
-```nginx
-FQDN=Machine_Name
-MAILSUBJ="Report for $FQDN"
-MAILTO=innoveos_report
-QUIETREPORTS=yes 
-```
-Now, in the file  `/etc/aide/aide.conf` , append the following lines 
-```
-# check only permissions, inode, user and group for etc
-CustomRule = p+i+n+u+g+s+b+m+c+md5+sha1 
+sudo apt-get install tripwire 
+ Generate a policy file by 
+ sudo twadmin --create-polfile /etc/tripwire/twpol.txt
+Initialize the database, 
+sudo tripwire --init
 
-/etc CustomRule     		
-/bin CustomRule      		
-/sbin CustomRule     		
-/var CustomRule			
+Notice paths and files that misses your computer
+and remove theme here by doing 
+sudo nano /etc/tripwire/twpol.txt
 
-# Folders to ignore
-!/var/log/.*     		# ignore the log dir it changes too often
-!/var/spool/.*   		# ignore spool dirs as they change too often
-!/var/adm/utmp$  		# ignore the file /var/adm/utmp
-!/var/cache/.*   		# ignore the cache
-!/usr/src/.*			# ignore src folder
-!/usr/tmp/.*			# ignore tmp folder
-!/root/.bash_history$   	# ignore file - its always going to change
-!/root/.nano_history$   	# ignore file - its always going to change
-!/var/www/logs/.*		# ignore the weblogs
-!/*.log				# ignore log files
-!/var/lib/nginx/proxy/.* 	# ignore transparent proxy files
-!/var/lib/php5/.*		# ignore php session files that gc does not clean up
+then recreating the encrypted policy file
+sudo twadmin -m P /etc/tripwire/twpol.txt
 
-# Some reported Attributes 
+Then JUst reinitialise the DB 
+sudo tripwire --init
+Then now scan :
+sudo tripwire --check
 
-report_attributes = u+g+ftype+md5+p+m+c
-ignore_list = b+i+n+l+s+a+S+I+sha1+sha256+sha512+rmd160+tiger+haval+crc32
+NOW YOU WILL SEE THE REPORT  :)
 
-```
-
-Here are the entity that must be monitored :
-* /etc : folder
-* /usr : folder
-* /root: folder
-....
 
 
 
