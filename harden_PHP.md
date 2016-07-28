@@ -75,6 +75,11 @@ file_uploads = Off
 allow_url_fopen = Off
 allow_url_include= Off
 
+# Escape some bad characters
+# magic_quotes_gpc = On
+
+# Disable X-Php Originating
+mail.add_x_header= Off
 
 # Session's security  : More at official (http://php.net/manual/en/session.configuration.php )
 
@@ -86,6 +91,9 @@ session.cookie_secure = 1
 
 # Change default location of session 
 session.save_path = /var/lib/php
+
+#Change session ID name to spoof ASP.net language
+session.name = ASP.NET_SessionId
 
 ```
 
