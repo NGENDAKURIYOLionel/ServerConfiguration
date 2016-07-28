@@ -57,31 +57,30 @@ The HIDS must send us a **email notification** to our email address(that we will
 
 We recommend the tripwire because of it's detailled reports.
 
-####Configure Tripwire HIDS
+## Configure Tripwire HIDS
 During the installation you will be asked to give 2 passwords (keys). Don't forget them.
-* Install tripwire
+##### Install tripwire
 ```
 sudo apt-get install tripwire 
 ```
-* Generate the policy file for tripwire by doing:
- 
+##### Generate the policy file for tripwire by doing
  ```
  sudo twadmin --create-polfile /etc/tripwire/twpol.txt
  ```
-* Initialize the database of tripwire to check if all the specified paths in ` /etc/tripwire/twpol.txt` exist on the
+##### Initialize the database of tripwire to check if all the specified paths in ` /etc/tripwire/twpol.txt` exist on the
  system 
  ```
 sudo tripwire --init
 ```
 
-* If there is some paths that are labeled as non-existant, comment them out in the policy file ` /etc/tripwire/twpol.txt`
+##### If there is some paths that are labeled as non-existant, comment them out in the policy file ` /etc/tripwire/twpol.txt`
 ```
 sudo nano /etc/tripwire/twpol.txt
 ```
 
-* Change some severity options  by replacing all the ` severity = $(SIG_MED)` and ` severity = $(SIG_LOW)`
+##### Change some severity options  by replacing all the ` severity = $(SIG_MED)` and ` severity = $(SIG_LOW)`
 by  `severity = $(SIG_HI)` because we want to be notified of any change on our system.
-* Comment out some paths that changes too much. For example `/var/log/` by `#/var/log/`
+##### Comment out some paths that changes too much. For example `/var/log/` by `#/var/log/`
 The policy file should like that:
 
 ```
@@ -408,7 +407,7 @@ MAILTO = innoveos_report@gmail.com ;
 
 }
 ```
-* Edit also the configuration policy of tripwire, `/etc/tripwire/twcfg.txt`
+##### Edit also the configuration policy of tripwire, `/etc/tripwire/twcfg.txt`
 and it should look like this:
 
 ```
@@ -432,24 +431,25 @@ MAILPROGRAM   =/usr/sbin/sendmail -oi -t
 TEMPDIRECTORY =/tmp
 ```
 
-* Now recompile the encrypted and configuration policy files so that tripwire will consider
-the modifications
+##### Recompile the encrypted and configuration policy files to consider new settings
 ```
 sudo twadmin --create-cfgfile -S /etc/tripwire/site.key /etc/tripwire/twcfg.txt
 sudo twadmin -m P /etc/tripwire/twpol.txt
 ````
-* Now, reinitialize the database to implement our new policy:
+##### Reinitialize the database to implement our new policy:
 ```
 sudo tripwire --init
 ```
 
-* Now, verify the configuration of tripwire 
+### Verify the configuration of tripwire 
 ```
 sudo tripwire --check -M
 ```
-* Put tripwire to run cron tab every hour
+### Schedule tripwire to run hourly.
 
-NOW YOU WILL SEE THE REPORT  :)
+```
+0 * * * *
+```
 
 
 
