@@ -4,7 +4,7 @@
 This is a compilation of some best configuration for php.ini security
 Some may change depending on the project we are working on at `innoveos`
 
-```nginx
+```php
 
 # Disallow dangerous functions
 disable_functions = php_uname, getmyuid, getmypid, passthru,
