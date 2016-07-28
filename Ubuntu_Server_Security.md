@@ -25,30 +25,29 @@ apt-get install ssmtp
 ```
 Edit the file `/etc/ssmtp/ssmtp.conf` so it looks like this:
 ```ngnix
-root=ourmail@gmail.com
+root=innoveos_notifier@gmail.com
 mailhub=smtp.gmail.com:587
 rewriteDomain=gmail.com
 hostname=Machine_Name
-AuthUser=ourmail_notifier
-AuthPass=xxxxxxxxx
+AuthUser=innoveos_notifier
+AuthPass=innoveos_notifier_password
 FromLineOverride=YES
 #UseTLS=yes                   # apparently has been deprecated
 UseSTARTTLS=YES
 
 #For further details (man ssmtp && man ssmtp.conf)
 ```
-The value of `ourmail_notifier` will be given to you.
+The value of `innoveos_notifier` will be given to you.
 
-*Note*: At gmail the `ourmail_notifier` must be an account that is configured as `less secure` 
+*Note*: At gmail the `innoveos_notifier` must be an account that is configured as `less secure` 
 if not email notifications will not be sent from the server.
 ### How to send an email notification
 Here is an example of how to send an notification to our email 
 
 ```python
 #Notice that there is no space between \n and the begining of the body
-echo -e "Subject: Report Alert \nHere it is the body of the message " | ssmtp ourmail@gmail.com
+echo -e "Subject: Report Alert \nHere it is the body of the message " | ssmtp innoveos_report@gmail.com
 ```
-
 
 #Configure an HIDS (Host based intrusion detection system)
 An HIDS must be installed so that we controll any modification of some specific folders and files.
