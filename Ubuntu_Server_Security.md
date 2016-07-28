@@ -106,7 +106,7 @@ SIG_MED       = 66 ;                 # Non-critical files that are of
 SIG_HI        = 100 ;                # Critical files that are
 				     # significant points of
 				     # vulnerability
-
+# this is the email we should report to:
 MAILTO = innoveos_report@gmail.com ;
 
 #### ALL THE FILES ARE SET TO SIG_HI SO THAT ANY CHANGE BE REPORTED ###
@@ -376,25 +376,46 @@ MAILTO = innoveos_report@gmail.com ;
 
 }
 ```
+* Edit also the configuration policy of tripwire, `/etc/tripwire/twcfg.txt`
+and it should look like this:
 
-* Now recreate the encrypted policy file that tripwire actually uses
 ```
+ROOT          =/usr/sbin
+POLFILE       =/etc/tripwire/tw.pol
+DBFILE        =/var/lib/tripwire/$(HOSTNAME).twd
+REPORTFILE    =/var/lib/tripwire/report/$(HOSTNAME)-$(DATE).twr
+SITEKEYFILE   =/etc/tripwire/site.key
+LOCALKEYFILE  =/etc/tripwire/$(HOSTNAME)-local.key
+EDITOR        =/usr/bin/editor
+LATEPROMPTING =false
+LOOSEDIRECTORYCHECKING =false
+MAILNOVIOLATIONS =false
+EMAILREPORTLEVEL =3
+REPORTLEVEL   =3
+SYSLOGREPORTING =true
+MAILMETHOD    =SENDMAIL
+MAILPROGRAM   =/usr/sbin/sendmail -oi -t
+ #SMTPHOST      =localhost
+ #SMTPPORT      =25
+TEMPDIRECTORY =/tmp
+```
+
+* Now recompile the encrypted and configuration policy files so that tripwire will consider
+the modifications
+```
+sudo twadmin --create-cfgfile -S /etc/tripwire/site.key /etc/tripwire/twcfg.txt
 sudo twadmin -m P /etc/tripwire/twpol.txt
-```
-Notice that if you have also modified the twcfg file you have to do compile this file again like this 
-```
- sudo twadmin --create-cfgfile -S /etc/tripwire/site.key /etc/tripwire/twcfg.txt
 ````
 * Now, reinitialize the database to implement our new policy:
 ```
 sudo tripwire --init
 ```
 
-* Now, verify the configuration of tripwire
+* Now, verify the configuration of tripwire 
 ```
-sudo tripwire --check
+sudo tripwire --check -M
 ```
-
+* Put tripwire to run cron tab every hour
 
 NOW YOU WILL SEE THE REPORT  :)
 
