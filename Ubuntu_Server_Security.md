@@ -446,13 +446,31 @@ sudo tripwire --init
 ```
 sudo tripwire --check -M
 ```
-### Schedule tripwire to run hourly.
+### Schedule tripwire to run hourly in this file `/etc/cron.hourly/tripwire` by editing it to:
 
 ```
-0 * * * *
+#!/bin/sh -e
+
+tripwire=/usr/sbin/tripwire
+[ -x $tripwire ] || exit 0
+umask 027
+$tripwire --check --quiet --email-report
+
+```
+# Secure the web server by Limit connections per seconds
+
+```
+/sbin/iptables -A INPUT -p tcp --dport 80 -i eth0 -m state --state NEW -m recent --set
+/sbin/iptables -A INPUT -p tcp --dport 80 -i eth0 -m state --state NEW -m recent --update --seconds 60  --hitcount 15 -j DROP
+service iptables save
 ```
 
+#13: Separate Disk Partitions
+# Secrue SSH 
+http://www.cyberciti.biz/tips/linux-unix-bsd-openssh-server-best-practices.html
 
+# BAckups 
+using rsnapshot
 
 
 
