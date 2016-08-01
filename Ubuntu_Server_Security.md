@@ -442,7 +442,7 @@ sudo tripwire --init
 ```
 /usr/sbin/tripwire --test --email xxxxxx@xxxx.com
 ```
-### Verify the configuration of tripwire 
+### Run a scan and see the report via email preconfigured
 ```
 sudo tripwire --check -M
 ```
