@@ -6,7 +6,7 @@ We will provide you:
 * An name of the machine : Machine_Name
 
 # Configure the firewall
-The firewall must be configured in so that the in-going and the out-going network traffic will be controlled.
+A firewall must be configured in so that the in-going and the out-going network traffic can be controlled.
 
 The firewall must be configured to:
 * Allow incoming HTTP(S) (TCP port 80-443) requests
@@ -17,7 +17,7 @@ The firewall must be configured to:
 
 #Configure the email notifier SSMTP
 
-SSMTP is our choice because it is more lightweight than  POSTFIX.
+`SSMTP` is our choice because it is more lightweight than  POSTFIX.
 
 Download and install the Mail Transfer Agent ssmtp.
 ```python
@@ -54,7 +54,7 @@ An HIDS must be installed so that we controll any modification of some specific 
 
 The HIDS must send us a **email notification** to our email address(that we will provide i.e innoveos_report) via ssmtp in case of a supervised folder or file is modified.
 
-We recommend the tripwire because of it's detailled reports.
+We recommend the file integrity checker `tripwire` because of it's detailled reports.
 
 ## Configure Tripwire HIDS
 During the installation you will be asked to give 2 passwords (keys). Don't forget them.
