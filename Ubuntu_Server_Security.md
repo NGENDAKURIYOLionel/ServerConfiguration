@@ -43,9 +43,8 @@ The value of `innoveos_notifier` will be given to you.
 if not email notifications will not be sent from the server.
 ### How to send an email notification
 Here is an example of how to send an notification to our email 
-
+(#Notice that there is no space between \n and the begining of the body)
 ```python
-#Notice that there is no space between \n and the begining of the body
 echo -e "Subject: Report Alert \nHere it is the body of the message " | ssmtp innoveos_report@gmail.com
 ```
 
@@ -439,7 +438,10 @@ sudo twadmin -m P /etc/tripwire/twpol.txt
 ```
 sudo tripwire --init
 ```
-
+##### Test if tripwire can send email
+```
+/usr/sbin/tripwire --test --email xxxxxx@xxxx.com
+```
 ### Verify the configuration of tripwire 
 ```
 sudo tripwire --check -M
