@@ -16,13 +16,20 @@ The firewall must be configured to:
 * Allow outgoing ssh **(TCP port 7200)** requests * Notice that it is not the default port *
 * Drop the rest
 
-### Anti brute-force rules
+###  Rules against remote brute-force
+First ,drop incoming connections which make more than 5 connections attempts upon ssh port within 60 seconds
 ```
-#Drop incoming connections which make more than 5 connections attempts upon ssh port within 60 seconds
 ssh_port=7200
 $IPT -I INPUT -p tcp --dport ${ssh_port} -i ${inet_if} -m state --state NEW -m recent  --set
 $IPT -I INPUT -p tcp --dport ${ssh_port} -i ${inet_if} -m state --state NEW -m recent  --update --seconds 60 --hitcount 5 -j DROP
 ```
+Second, secure the web server by limiting connections per second
+```
+/sbin/iptables -A INPUT -p tcp --dport 80 -i eth0 -m state --state NEW -m recent --set
+/sbin/iptables -A INPUT -p tcp --dport 80 -i eth0 -m state --state NEW -m recent --update --seconds 60  --hitcount 15 -j DROP
+service iptables save
+```
+
 # Configure port knocking
  We use port knocking for ssh port. It means that the port is closed until some 
  specific packets are sent on a sequence of ports.(That we will provide).
@@ -503,13 +510,7 @@ umask 027
 $tripwire --check --quiet --email-report
 
 ```
-# Secure the web server by Limit connections per seconds
 
-```
-/sbin/iptables -A INPUT -p tcp --dport 80 -i eth0 -m state --state NEW -m recent --set
-/sbin/iptables -A INPUT -p tcp --dport 80 -i eth0 -m state --state NEW -m recent --update --seconds 60  --hitcount 15 -j DROP
-service iptables save
-```
 # Define permissions 
 ```
 #chmod 700 /root
@@ -594,28 +595,34 @@ Test enforcing by doing:
 getenforce
 ```
 # Verify the file system 
-All SUID/SGID bits enabled file can be used for malicious activities, when the SUID/SGID executable has a security problem.All local or remote user can use such file.
+All SUID/SGID bits enabled file can be used for malicious activities, when the SUID/SGID executable has a security problem.
+
+All local or remote user can use such file.
 ### Identify unwanted SUID and SGID binaries
-```python
+```
 find / \( -perm -4000 -o -perm -2000 \) -print
 find / -path -prune -o -type f -perm +6000 -ls
 ```
 ### Identify world writable files
-```python
+```
 find /dir -xdev -type d \( -perm -0002 -a ! -perm -1000 \) -print
 ```
 ### Identify Orphaned files and folders
-```python
+```nginx
 find / -xdev \( -nouser -o -nogroup \) -print
 ```
 
 #13: Separate Disk Partitions
+
 # Configure secure shell server (OpenSSH)
 SSH service must have a secure configuration to allow and do what is required.
-For so, edit the configuration file `/etc/ssh/sshd_config` or `/etc/ssh/ssh_config ` on 
-some OS and define these options as shown:
 
-### Ssh configuration file
+##### Authentication
+The secure shell server must implement two-factor authentication that is both authentication via password and via public-key.
+
+A authentication without public-key must be refused.
+##### Ssh configuration file
+Make sure these following variables are set in the  `/etc/ssh/sshd_config` or `/etc/ssh/ssh_config ` configuration file :
 
 ```
 # CHANGE DEFAULT PORT
@@ -651,10 +658,9 @@ HostbasedAuthentication no
 Banner /etc/innoveos_banner
 ```
 # Update openssl
- see tyhe version 
+View the version of openssl
  ```
-sudo openssl version -v
-sudo openssl version -b
+ sudo openssl version -v && openssl version -b
  ```
  If the date is older than “Mon Apr 7 20:33:29 UTC 2014,” and the version is “1.0.1,” then your system is vulnerable to the Heartbleed bug.
 
@@ -664,14 +670,19 @@ sudo apt-get update
 sudo apt-get upgrade openssl libssl-dev
 sudo apt-cache policy openssl libssl-dev
 ```
-# check services running and disable not necessary
+# Check services running and disable those not necessary
 ```
 sudo initctl list | grep running
 ```
-# BAckups 
-using rsnapshot
+# Backups 
+Using rsnapshot
 
 # Keep the system up-to-date
+```
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get dist-upgrade
+```
 
 
-more :https://www.maketecheasier.com/hardening-ubuntu-server/
+more :[mailto:ngendlio@gmail.com](Contact me)
