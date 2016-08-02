@@ -573,6 +573,11 @@ net.ipv4.tcp_syncookies = 1
 # Enable bad error message Protection
 net.ipv4.icmp_ignore_bogus_error_responses = 1
 
+#Disable IPV6
+net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+net.ipv6.conf.lo.disable_ipv6 = 1
+
 ```
 Then load the new settings by:
 ```
@@ -645,11 +650,28 @@ HostbasedAuthentication no
 # Banner: YOU ARE ACCESSING A INNOVEOS INFORMATION SYSTEM,..., YOU ARE RESPONSIBLE ...
 Banner /etc/innoveos_banner
 ```
+# Update openssl
+ see tyhe version 
+ ```
+sudo openssl version -v
+sudo openssl version -b
+ ```
+ If the date is older than “Mon Apr 7 20:33:29 UTC 2014,” and the version is “1.0.1,” then your system is vulnerable to the Heartbleed bug.
 
-
+To fix this bug, update OpenSSL to the latest version and run
+ ```
+sudo apt-get update
+sudo apt-get upgrade openssl libssl-dev
+sudo apt-cache policy openssl libssl-dev
+```
+# check services running and disable not necessary
+```
+sudo initctl list | grep running
+```
 # BAckups 
 using rsnapshot
 
 # Keep the system up-to-date
 
 
+more :https://www.maketecheasier.com/hardening-ubuntu-server/
