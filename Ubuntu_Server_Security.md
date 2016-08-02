@@ -650,6 +650,6 @@ Banner /etc/innoveos_banner
 # BAckups 
 using rsnapshot
 
-
+# Keep the system up-to-date
 
 
