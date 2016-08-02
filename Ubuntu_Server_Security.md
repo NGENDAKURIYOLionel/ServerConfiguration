@@ -12,8 +12,8 @@ The firewall must be configured to:
 * Allow incoming HTTP(S) (TCP port 80-443) requests
 * Allow outgoing ntp (port 123) requests
 * Allow outgoing smtp **(TCP port 25 & 587 & 465)** requests
-* Allow traffic comming from the localhost and all established connections and traffic related to established connections.
-* Allow outgoing ssh **(TCP port 7200)** requests * Notice that it is not the default port *
+* Allow incoming ssh **(TCP port 7200)** requests * Notice that it is not the default port *
+* Allow all traffic from the localhost.
 * Drop the rest
 
 ###  Rules against remote brute-force
