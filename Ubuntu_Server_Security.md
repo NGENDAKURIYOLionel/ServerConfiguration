@@ -7,13 +7,59 @@ We will provide you:
 
 # Configure the firewall
 A firewall must be configured in so that the in-going and the out-going network traffic can be controlled.
-
+### General rules
 The firewall must be configured to:
 * Allow incoming HTTP(S) (TCP port 80-443) requests
 * Allow outgoing ntp (port 123) requests
 * Allow outgoing smtp **(TCP port 25 & 587 & 465)** requests
-* Allow outgoing ssh **(TCP port 72)** requests * Notice that it is not the default port*
+* Allow traffic comming from the localhost and all established connections and traffic related to established connections.
+* Allow outgoing ssh **(TCP port 7200)** requests * Notice that it is not the default port *
 * Drop the rest
+
+### Anti brute-force rules
+```
+#Drop incoming connections which make more than 5 connections attempts upon ssh port within 60 seconds
+ssh_port=7200
+$IPT -I INPUT -p tcp --dport ${ssh_port} -i ${inet_if} -m state --state NEW -m recent  --set
+$IPT -I INPUT -p tcp --dport ${ssh_port} -i ${inet_if} -m state --state NEW -m recent  --update --seconds 60 --hitcount 5 -j DROP
+```
+# Configure port knocking
+ We use port knocking for ssh port. It means that the port is closed until some 
+ specific packets are sent on a sequence of ports.(That we will provide).
+ 
+ For example, edit the configuration file `/etc/knockd.conf` so that the port will be automatically closed 
+ behind the logged user after just 10 seconds.
+
+ ```
+[options]
+    UseSyslog
+
+[SSH]
+    sequence = 5438,3428,3280,4479
+    tcpflags = syn
+    seq_timeout = 15
+    start_command = /sbin/iptables -I INPUT 1 -s %IP% -p tcp --dport 7200 -j ACCEPT
+    cmd_timeout   = 10
+    stop_command  = /usr/sbin/iptables -D INPUT -s %IP% -p tcp --syn --dport 7200 -j ACCEPT
+ ```
+Now enable the knockd service by editing the file `/etc/default/knockd` as follow:
+```
+START_KNOCKD=1
+```
+Then, start the service by `sudo service knockd start`.
+## Knocking
+To open the specified port, just use the knockd program available for linux, MAC and Windows from the 
+(official website)[http://www.zeroflux.org/projects].
+Then, just do:
+```
+knock server_ip_address 5438 3428 3280 4479
+```
+If it is not available, you can use nmap like this.
+### Open the ssh port :
+```
+for x in 5438 3428 3280 4479; do nmap -Pn --host_timeout 201 --max-retries 0 -p $x server_ip_address; done
+```
+
 
 #Configure the email notifier SSMTP
 
@@ -464,10 +510,142 @@ $tripwire --check --quiet --email-report
 /sbin/iptables -A INPUT -p tcp --dport 80 -i eth0 -m state --state NEW -m recent --update --seconds 60  --hitcount 15 -j DROP
 service iptables save
 ```
+# Define permissions 
+```
+#chmod 700 /root
+
+#chmod 700 /var/log/audit
+
+#chmod 740 /etc/rc.d/init.d/iptables
+
+#chmod 740 /sbin/iptables
+
+#chmod –R 700 /etc/skel
+
+#chmod 600 /etc/rsyslog.conf
+
+#chmod 640 /etc/security/access.conf
+
+#chmod 600 /etc/sysctl.conf
+```
+# Harden the kernel via the sysctl interface 
+Sysctl is an interface for examining and dynamically changing parameters in the Linux operating system.
+
+Now, optimize  kernel parameters by editing the file `/etc/sysctl.conf` this way:
+
+```ngnix
+# Turn on execshield
+kernel.exec-shield=1
+kernel.randomize_va_space=1
+
+# Enable IP spoofing protection
+net.ipv4.conf.all.rp_filter=1
+
+# Disable IP source routing
+net.ipv4.conf.all.accept_source_route=0
+
+# Ignoring broadcasts request
+net.ipv4.icmp_echo_ignore_broadcasts=1
+net.ipv4.icmp_ignore_bogus_error_messages=1
+
+# Make sure spoofed packets get logged
+net.ipv4.conf.all.log_martians = 1
+net.ipv4.conf.default.log_martians = 1
+
+# Disable ICMP routing redirects
+sysctl -w net.ipv4.conf.all.accept_redirects=0
+sysctl -w net.ipv6.conf.all.accept_redirects=0
+sysctl -w net.ipv4.conf.all.send_redirects=0
+sysctl -w net.ipv6.conf.all.send_redirects=0
+
+# Disables the magic-sysrq key
+kernel.sysrq = 0
+
+# Turn off the tcp_sack
+net.ipv4.tcp_sack = 0
+
+# Turn off the tcp_timestamps
+net.ipv4.tcp_timestamps = 0
+
+# Enable TCP SYN Cookie Protection
+net.ipv4.tcp_syncookies = 1
+
+# Enable bad error message Protection
+net.ipv4.icmp_ignore_bogus_error_responses = 1
+
+```
+Then load the new settings by:
+```
+ sudo sysctl -p
+```
+# Enable Security enhanced Linux (SELINUX)
+Harden the OS by defining a mandatory access control  policy via `selinux`.
+Edit the file `/etc/sysconfig/selinux` to:
+```nginx
+SELINUX=enforcing
+```
+Test enforcing by doing:
+```
+getenforce
+```
+# Verify the file system 
+All SUID/SGID bits enabled file can be used for malicious activities, when the SUID/SGID executable has a security problem.All local or remote user can use such file.
+### Identify unwanted SUID and SGID binaries
+```python
+find / \( -perm -4000 -o -perm -2000 \) -print
+find / -path -prune -o -type f -perm +6000 -ls
+```
+### Identify world writable files
+```python
+find /dir -xdev -type d \( -perm -0002 -a ! -perm -1000 \) -print
+```
+### Identify Orphaned files and folders
+```python
+find / -xdev \( -nouser -o -nogroup \) -print
+```
 
 #13: Separate Disk Partitions
-# Secrue SSH 
-http://www.cyberciti.biz/tips/linux-unix-bsd-openssh-server-best-practices.html
+# Configure secure shell server (OpenSSH)
+SSH service must have a secure configuration to allow and do what is required.
+For so, edit the configuration file `/etc/ssh/sshd_config` or `/etc/ssh/ssh_config ` on 
+some OS and define these options as shown:
+
+### Ssh configuration file
+
+```
+# CHANGE DEFAULT PORT
+Port 7200
+
+#ONLY USE PROTOCOL 2
+Protocol 2
+
+#ALLOW ONLY SPECIFIC USERS OR GROUPS (THAT WE WILL PROVIDE)
+AllowUsers Inno_user1 Inno_user2 Inno_user3
+AllowGroups sysadmin developers ...
+
+#DISCONNECT SSH WHEN NO ACTIVITY,[TEST EACH 3 MINS IF THE CLIENT IS  ALIVE IF NOT TEST
+#AGAIN 2 TIMES THEN CLOSE THE SESSION]
+ClientAliveInterval 180
+ClientAliveCountMax 3
+
+#MUST SPECIFY HOW MANY SECONDS TO KEEP THE CONNECTION ALIVE WITHOUT SUCCESSFULLY LOGGING IN. (30 SECONDS)
+LoginGraceTime 30
+
+# DISABLE ROOT LOGIN ONLY SUDO
+PermitRootLogin no
+
+# REFUSE A LOGIN ATTEMPT IF THE AUTHENTICATION FILES ARE READABLE BY EVERYONE.
+StrictModes yes
+
+PasswordAuthentication yes
+PermitEmptyPasswords no
+PublicKeyAuthentication yes
+HostbasedAuthentication no
+
+# Banner: YOU ARE ACCESSING A INNOVEOS INFORMATION SYSTEM,..., YOU ARE RESPONSIBLE ...
+Banner /etc/innoveos_banner
+```
+
 
 # BAckups 
 using rsnapshot
