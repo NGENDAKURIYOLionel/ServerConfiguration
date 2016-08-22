@@ -510,7 +510,7 @@ umask 027
 $tripwire --check --quiet --email-report
 
 ```
-
+More about crontab :https://www.unixmen.com/add-cron-jobs-linux-unix/
 # Define permissions 
 ```
 #chmod 700 /root
