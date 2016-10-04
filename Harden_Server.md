@@ -129,12 +129,15 @@ sudo tripwire --init
 sudo nano /etc/tripwire/twpol.txt
 ```
 
-##### Change some severity options  by replacing all the ` severity = $(SIG_MED)` and ` severity = $(SIG_LOW)`
-by  `severity = $(SIG_HI)` because we want to be notified of any change on our system.
-##### Comment out some paths that changes too much. For example `/var/log/` by `#/var/log/`
+##### Notice the errors  resulting  that some folders don't exists on   your computer...then comment them out
+
+##### Comment out some paths that changes too much. For example `/var/log/` by `#/var/log/` 
+###### Replace `YOURMAIL` by you current e-mail.
+
 The policy file should like that:
 
 ```
+
 #
 # Standard Debian Tripwire configuration
 #
@@ -188,10 +191,8 @@ SIG_MED       = 66 ;                 # Non-critical files that are of
 SIG_HI        = 100 ;                # Critical files that are
 				     # significant points of
 				     # vulnerability
-# this is the email we should report to:
-MAILTO = innoveos_report@gmail.com ;
 
-#### ALL THE FILES ARE SET TO SIG_HI SO THAT ANY CHANGE BE REPORTED ###
+MAILTO = YOURMAIL@gmail.com;
 
 #
 # Tripwire Binaries
@@ -301,7 +302,7 @@ MAILTO = innoveos_report@gmail.com ;
 #
 (
   rulename = "Security Control",
-  severity = $(SIG_HI),
+  severity = $(SIG_MED),
   emailto = $(MAILTO)
 )
 {
@@ -329,35 +330,35 @@ MAILTO = innoveos_report@gmail.com ;
 # These files change the behavior of the root account
 (
   rulename = "Root config files",
-  severity = $(SIG_HI),
+  severity = 100,
   emailto = $(MAILTO)
 )
 {
-	/root                           -> $(SEC_CRIT) ; # Catch all additions to /root
-    #/root/mail                     -> $(SEC_CONFIG) ;
-    #/root/Mail                     -> $(SEC_CONFIG) ;
-    #/root/.xsession-errors         -> $(SEC_CONFIG) ;
-    #/root/.xauth                   -> $(SEC_CONFIG) ;
-    #/root/.tcshrc                  -> $(SEC_CONFIG) ;
-    #/root/.sawfish                 -> $(SEC_CONFIG) ;
-    #/root/.pinerc                  -> $(SEC_CONFIG) ;
-    #/root/.mc                      -> $(SEC_CONFIG) ;
-    #/root/.gnome_private           -> $(SEC_CONFIG) ;
-    #/root/.gnome-desktop           -> $(SEC_CONFIG) ;
-    #/root/.gnome                   -> $(SEC_CONFIG) ;
-    #/root/.esd_auth                        -> $(SEC_CONFIG) ;
-    #/root/.elm                     -> $(SEC_CONFIG) ;
-    #/root/.cshrc                   -> $(SEC_CONFIG) ;
-    /root/.bashrc                   -> $(SEC_CONFIG) ;
-    #/root/.bash_profile            -> $(SEC_CONFIG) ;
-    #/root/.bash_logout             -> $(SEC_CONFIG) ;
-    /root/.bash_history             -> $(SEC_CONFIG) ;
-    #/root/.amandahosts             -> $(SEC_CONFIG) ;
-    #/root/.addressbook.lu          -> $(SEC_CONFIG) ;
-    #/root/.addressbook             -> $(SEC_CONFIG) ;
-    #/root/.Xresources              -> $(SEC_CONFIG) ;
-    #/root/.Xauthority              -> $(SEC_CONFIG) -i ; # Changes Inode number on login
-    #/root/.ICEauthority                -> $(SEC_CONFIG) ;
+	/root				-> $(SEC_CRIT) ; # Catch all additions to /root
+#	/root/mail			-> $(SEC_CONFIG) ;
+#	/root/Mail			-> $(SEC_CONFIG) ;
+#	/root/.xsession-errors		-> $(SEC_CONFIG) ;
+#	/root/.xauth			-> $(SEC_CONFIG) ;
+#	/root/.tcshrc			-> $(SEC_CONFIG) ;
+#	/root/.sawfish			-> $(SEC_CONFIG) ;
+#	/root/.pinerc			-> $(SEC_CONFIG) ;
+#	/root/.mc			-> $(SEC_CONFIG) ;
+#	/root/.gnome_private		-> $(SEC_CONFIG) ;
+#	/root/.gnome-desktop		-> $(SEC_CONFIG) ;
+#	/root/.gnome			-> $(SEC_CONFIG) ;
+#	/root/.esd_auth			-> $(SEC_CONFIG) ;
+#	/root/.elm			-> $(SEC_CONFIG) ;
+#	/root/.cshrc		        -> $(SEC_CONFIG) ;
+	/root/.bashrc			-> $(SEC_CONFIG) ;
+#	/root/.bash_profile		-> $(SEC_CONFIG) ;
+#	/root/.bash_logout		-> $(SEC_CONFIG) ;
+#	/root/.bash_history		-> $(SEC_CONFIG) ;
+#	/root/.amandahosts		-> $(SEC_CONFIG) ;
+#	/root/.addressbook.lu		-> $(SEC_CONFIG) ;
+#	/root/.addressbook		-> $(SEC_CONFIG) ;
+#	/root/.Xresources		-> $(SEC_CONFIG) ;
+#	/root/.Xauthority		-> $(SEC_CONFIG) -i ; # Changes Inode number on login
+#	/root/.ICEauthority		    -> $(SEC_CONFIG) ;
 }
 
 #
@@ -369,7 +370,8 @@ MAILTO = innoveos_report@gmail.com ;
   emailto = $(MAILTO)
 )
 {
-    /dev		-> $(Device) ;
+	/dev		-> $(Device) ;
+#	/proc		-> $(Device) ;
     /dev/pts                -> $(Device) ;
     #/proc                  -> $(Device) ;
     /proc/devices           -> $(Device) ;
@@ -393,7 +395,6 @@ MAILTO = innoveos_report@gmail.com ;
     /proc/locks             -> $(Device) ;
     /proc/meminfo           -> $(Device) ;
     /proc/misc              -> $(Device) ;
-
 }
 
 #
@@ -401,7 +402,7 @@ MAILTO = innoveos_report@gmail.com ;
 #
 (
   rulename = "Other configuration files",
-  severity = $(SIG_HI),
+  severity = $(SIG_MED),
   emailto = $(MAILTO)
 )
 {
@@ -413,7 +414,7 @@ MAILTO = innoveos_report@gmail.com ;
 #
 (
   rulename = "Other binaries",
-  severity = $(SIG_HI),
+  severity = $(SIG_MED),
   emailto = $(MAILTO)
 )
 {
@@ -428,11 +429,10 @@ MAILTO = innoveos_report@gmail.com ;
 #
 (
   rulename = "Other libraries",
-  severity = $(SIG_HI),
+  severity = $(SIG_MED),
   emailto = $(MAILTO)
 )
 {
-
 	/usr/local/lib	-> $(SEC_BIN) ;
 	/usr/lib	-> $(SEC_BIN) ;
 }
@@ -443,7 +443,7 @@ MAILTO = innoveos_report@gmail.com ;
 #
 (
   rulename = "Invariant Directories",
-  severity = $(SIG_HI),
+  severity = $(SIG_MED),
   emailto = $(MAILTO)
 )
 {
@@ -453,10 +453,8 @@ MAILTO = innoveos_report@gmail.com ;
 	/usr		-> $(SEC_INVARIANT) (recurse = 0) ;
 	/var		-> $(SEC_INVARIANT) (recurse = 0) ;
 	/var/tmp	-> $(SEC_INVARIANT) (recurse = 0) ;
-	#/var/lock              -> $(SEC_CONFIG) ;
-	#/var/run               -> $(SEC_CONFIG) ; # daemon PIDs
-
 }
+
 ```
 ##### Edit also the configuration policy of tripwire, `/etc/tripwire/twcfg.txt`
 and it should look like this:
