@@ -66,7 +66,7 @@ If it is not available, you can use nmap like this.
 ```
 for x in 5438 3428 3280 4479; do nmap -Pn --host_timeout 201 --max-retries 0 -p $x server_ip_address; done
 ```
-
+`Note`: For more informations that are more precised, check out the book `Linux server security, Pge 16`  on scanlibs.com
 
 #Configure the email notifier SSMTP
 
