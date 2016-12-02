@@ -681,6 +681,6 @@ sudo apt-get update
 sudo apt-get upgrade
 sudo apt-get dist-upgrade
 ```
-
+Other sources : http://knowledgepia.com/en/k-blog/linux-security/20-linux-server-hardening-security-tips
 
 more :[mailto:ngendlio@gmail.com](Contact me)
