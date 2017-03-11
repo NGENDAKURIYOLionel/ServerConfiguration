@@ -122,7 +122,10 @@ http {
         
         # MITIGATE XSS ATTACKS..
         add_header X-XSS-Protection "1; mode=block";
-        
+```
+And just go into the file sites-enables/default je crois and thene put the next code. But you can put all the code in 
+the previous file. nginx.conf
+```nginx
         #SERVER OPTIONS
         server {
           listen 443 ssl default deferred;
